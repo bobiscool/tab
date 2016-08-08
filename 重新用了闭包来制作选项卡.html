@@ -1,0 +1,108 @@
+<!--闭包 传参 可以一次传多个参数  闭包解决的是匹配问题 不能解决 记住以前的问题 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{ margin: 0;
+            padding:0;
+            list-style: none;
+        }
+        #waikuang { width:600px;height:400px; margin:30px auto;}
+        #biankuang { width:150px; height:400px; float: left;}
+        #biankuang li { text-align:center; line-height:100px; color:white;}
+        #tupian {  position:relative;width: 448px;height:400px; float:right; background-size:cover; }
+        .dibukuang { width:448px;  height:50px; position:absolute;left:0px; bottom:0px;  display: none;}
+        .zutiao { height:25%; background: gray;}
+        .dibukuang li { float: left;margin:0px 0px; background:url("li背景.png"); height:50px;line-height: 50px; text-align: center; }
+
+    </style>
+</head>
+<script>
+    // 动态创建 li的个数 就是 总的width 除以li个数的length 就是 li的宽度
+    //先是动态创建 div 里面 ul ul 里面 li
+    //左边框  div  div里面  li四个
+    //底部边框  div  div里面 ul四个  li 不知多少个
+    window.onload = function(){
+        var oBk = document.querySelector("#waikuang");
+        var oTk = document.querySelector("#tupian");
+        var last2 =[];
+        var Abn = ["暖色调","金色夕阳","灰色格调","baby"];
+        var Adn =[
+            ["暖色调1","暖色调2","暖色调3","暖色调4"],
+            ["金色夕阳1","金色夕阳2","金色夕阳3","金色夕阳4"],
+            ["灰色格调1","灰色格调2"],
+            ["baby1","baby2","baby3","baby4","baby5"]
+        ];
+        var Aimg=[
+            ['1/4514381803.jpg','1/Grey_squirrel_400px.jpg','1/grey_squirrel_by_lou_in_canada-d4gfxmh.jpg','1/images.jpeg'],
+            ['2/400px-Wikipedia-logo-su-1000.png','2/images.png','2/peerj-logo-400px.png','2/ShortStoryMonth_400x400.jpg'],
+            ['3/dc8004fafbc54c4a988c666862cce7c0.jpg','3/u=1874686373,935109191&fm=21&gp=0.jpg'],
+            ['4/377adab44aed2e7394aa5a128f01a18b87d6fa49.jpg','4/200810309416546_2.jpg','4/u=1132236259,393966301&fm=21&gp=0.jpg','4/u=3939984853,1353410264&fm=21&gp=0.jpg','4/u=3950945812,3385900676&fm=21&gp=0.jpg']
+        ];
+
+        chuangjian("ul",oBk,"id","biankuang",0,"");//创建左边框
+        oTk.style.background = "url("+Aimg[0][0]+")";
+        for (var i=0;i<Aimg.length;i++) {
+            console.time("m");
+            chuangjian("li", document.querySelector("#biankuang"), "class", "zutiao", i, Abn);
+            chuangjian("ul",oTk,"class","dibukuang",0,"");
+            console.timeEnd("m");
+            document.querySelectorAll(".zutiao")[i].index = i;
+            var Adbul=oTk.querySelectorAll(".dibukuang");
+            Adbul[0].style.display ="block";
+            for (var j = 0; j < Aimg[i].length;j++){// console.log(Adbul[j])
+                chuangjian("li", Adbul[i], "class", "Imgtab",j, Adn[i]);
+                Adbul[i].querySelectorAll("li")[j].style.width = changeWidth(Aimg[i].length)+"px";
+                (function(a,b) {
+                    Adbul[a].querySelectorAll("li")[b].onclick = function () {
+                        last2[a].style.background = "url(\"li背景.png\")";
+                        this.style.background = "url(\"li2.png\")";
+                        last2[a] = this;
+                        console.log(Aimg[a][b]);
+                        oTk.style.background = "url(" + Aimg[a][b] + ")";
+                    }
+                })(i,j);  //闭包 传值
+            }
+            var last =  document.querySelectorAll(".zutiao")[0];
+            last2[i] = Adbul[i].querySelectorAll('li')[0];
+            Adbul[0].querySelectorAll('li')[0].style.background="url(\"li2.png\")";
+            document.querySelectorAll(".zutiao")[0].style.backgroundColor ="orange";
+            (function(a){
+            document.querySelectorAll(".zutiao")[a].onclick = function(){
+                last.style.backgroundColor = "gray";
+                this.style.backgroundColor = "orange";
+                for(j=0;j<Adbul[a].querySelectorAll('li').length;j++){Adbul[a].querySelectorAll('li')[j].style.background="url(\"li背景.png\")";}
+                Adbul[last.index].style.display = "none";
+                Adbul[a].style.display = "block";
+                Adbul[a].querySelectorAll('li')[0].style.background="url(\"li2.png\")";
+                oTk.style.background = "url("+Aimg[a][0]+")";
+                last2[a] = Adbul[a].querySelectorAll('li')[0];
+                last = this;}})(i);
+        }
+
+        function chuangjian(Child,Mother,IoC,Name,N,Arr,fn){   // 子对象  母对象  子对象的 id 或者class   然后是名字    然后添加的个数
+            var tem = document.createElement(Child);
+            tem.setAttribute(IoC, Name);
+            var tem2 = typeof Arr=="object";
+            tem.innerHTML = tem2 ? Arr[N] : Arr;
+            Mother.appendChild(tem);
+            if(fn) {
+                fn;
+            }
+        }
+        function changeWidth(Number){                  //li 自适应改变宽度
+            //console.log(oTk.style);
+            var Liwidth=448/Number;
+            return Liwidth;
+        }
+    };
+</script>
+<body>
+<div id="waikuang" >
+    <div id="tupian">
+    </div>
+</div>
+</body>
+</html>
